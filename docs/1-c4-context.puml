@@ -1,0 +1,15 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(user, "Владелец дома", "Пользователь, который управляет системой отопления через веб-интерфейс")
+
+System(system, "Система отопления", "Управляет отоплением дома, включая контроль и мониторинг температуры")
+
+System_Ext(webui, "Веб-интерфейс", "Позволяет владельцам домов взаимодействовать с системой отопления")
+System_Ext(sensors, "Датчики температуры", "Передают текущие данные о температуре в систему отопления")
+
+Rel(user, webui, "Использует", "HTTP/HTTPS")
+Rel(webui, system, "Отправляет запросы API", "REST API")
+Rel(system, sensors, "Запрашивает данные о температуре", "REST API")
+
+@enduml
