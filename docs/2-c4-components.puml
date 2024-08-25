@@ -1,0 +1,73 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+' Основная система
+System_Boundary(c1, "SAAS система") {
+
+    ' API Gateway
+    Container(api_gateway, "API Gateway", "Kong", "Маршрутизация запросов, JWT проверка")
+
+    ' User Service
+    Container(user_service, "User Service", "Keycloak", "Регистрация и авторизация пользователей")
+
+    ' Home Management Service
+    Container(home_service, "Home Management Service", "Java,Spring", "Управление домами пользователей")
+
+    ' Device Integration Services
+    Boundary(device_integration, "Device Integration Services") {
+        Container(mqtt_adapter, "MQTT Device Adapter", "Java,Spring", "Адаптер для MQTT устройств")
+        Container(other_adapter, "Other Device Adapter", "Java,Spring", "Адаптер для других устройств")
+    }
+
+    ' Device Management Service
+    Container(device_management, "Device Management Service", "Java,Spring", "Управление устройствами")
+
+    ' Telemetry Service
+    Container(telemetry_service, "Telemetry Service", "Java,Spring", "Сбор и хранение данных с устройств")
+
+    ' Automation Service
+    Container(automation_service, "Automation Service", "Java,Spring", "Управление сценариями автоматизации")
+
+    ' Notification Service
+    Container(notification_service, "Notification Service", "Java,Spring", "Отправка SMS, email через внешние системы")
+
+    ' Шина данных (Kafka)
+    Container(kafka, "Data Bus", "Kafka", "Асинхронное взаимодействие")
+}
+
+' Внешние системы
+System_Ext(sms_gateway, "SMS Gateway", "Отправка SMS")
+System_Ext(email_gateway, "Email Gateway", "Отправка email")
+System_Ext(web_app, "Web Application", "Веб-приложение для пользователей")
+System_Ext(external_device, "External Devices", "Внешние устройства пользователей")
+
+' Пользователь системы
+Person(user, "User", "Пользователь системы")
+
+' Взаимодействие между контейнерами
+Rel(user, web_app, "Использует")
+Rel(web_app, api_gateway, "HTTP Requests")
+Rel(api_gateway, home_service, "Запросы управления домами", "REST API")
+Rel(api_gateway, device_management, "Запросы управления устройствами", "REST API")
+Rel(api_gateway, telemetry_service, "Запросы чтения данных телеметрии", "REST API")
+Rel(api_gateway, automation_service, "Запросы работы с автоматизацией", "REST API")
+Rel(api_gateway, user_service, "Запросы авторизации", "REST API")
+
+Rel(device_integration, kafka, "Передача данных с устройств в систему")
+Rel(kafka, device_integration, "Получение команд от системы к устройствам")
+Rel(kafka, telemetry_service, "Чтение данных с устройств")
+Rel(kafka, automation_service, "Чтение данных с устройств")
+Rel(kafka, notification_service, "События для уведомлений")
+Rel(device_management, kafka, "Передача команд устройствам")
+Rel(device_management, home_service, "Проверка доступа к дому", "REST API")
+Rel(telemetry_service, device_management, "Проверка доступа к устройству", "REST API")
+Rel(automation_service, kafka, "Команды отправки уведомлений")
+Rel(user_service, kafka, "Команды отправки уведомлений")
+
+Rel(notification_service, sms_gateway, "Отправка SMS", "REST API")
+Rel(notification_service, email_gateway, "Отправка email", "SMTP")
+
+Rel(mqtt_adapter, external_device, "MQTT Communication")
+Rel(other_adapter, external_device, "Other Protocol Communication")
+
+@enduml
