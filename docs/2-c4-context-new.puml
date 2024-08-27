@@ -1,5 +1,7 @@
 @startuml
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!define RELATIVE_INCLUDE true
+
+!include C4/C4_Context.puml
 
 ' Основная система
 System(c1, "SAAS система")

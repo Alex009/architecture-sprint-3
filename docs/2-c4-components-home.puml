@@ -1,0 +1,30 @@
+@startuml
+!define RELATIVE_INCLUDE true
+
+!include C4/C4_Component.puml
+
+Container_Boundary(c1, "Home Management Service") {
+
+    ' Компоненты
+    Component(home_user_api, "Home User API", "Spring REST Controller", "Обработка внешних запросов")
+    Component(home_service_api, "Home Service API", "Spring REST Controller", "Обработка запросов от сервисов")
+    Component(home_service, "Home Service", "Spring Service", "Логика управления домами")
+    Component(home_repository, "Home Repository", "Spring Data JPA", "Доступ к данным домов в базе данных")
+    Component(home_db, "Home Database", "PostgreSQL", "Хранение данных о домах")
+
+    ' Взаимодействие между компонентами
+    Rel(home_user_api, home_service, "Вызовы бизнес-логики")
+    Rel(home_service_api, home_service, "Вызовы бизнес-логики")
+    Rel(home_service, home_repository, "Запросы к данным домов", "JPA")
+    Rel(home_repository, home_db, "Чтение и запись данных", "SQL")
+}
+
+' Внешние взаимодействия
+Component_Ext(api_gateway, "API Gateway", "Маршрутизация запросов, JWT проверка")
+Component_Ext(device_management, "Device Management Service", "Управление устройствами")
+
+' Взаимодействие с внешними системами
+Rel(api_gateway, home_user_api, "Направление запросов на управление домами", "REST API")
+Rel(device_management, home_service_api, "Запросы доступа к данным домов", "REST API")
+
+@enduml

@@ -1,0 +1,35 @@
+@startuml
+!define RELATIVE_INCLUDE true
+
+!include C4/C4_Component.puml
+
+Container_Boundary(c1, "Device Integration Adapter") {
+
+    ' Компоненты
+    Component(integration_adapter, "Integration Adapter", "Spring Service", "Механизмы непосредственного взаимодействия с устройствами")
+    Component(integration_service, "Integration Service", "Spring Service", "Логика управления устройствами")
+    Component(integration_repository, "Integration Repository", "Spring Data JPA", "Доступ к данным устройств в базе данных")
+    Component(integration_db, "Integration Database", "Redis", "Хранение данных об устройствах")
+    Component(kafka_listener, "Kafka Listener", "Spring Kafka Listener", "Получение команд от сервисов через Kafka")
+    Component(kafka_producer, "Kafka Producer", "Spring Kafka Producer", "Отправка команд устройствам через Kafka")
+
+    ' Взаимодействие между компонентами
+    Rel(kafka_listener, integration_service, "Передача команд в бизнес-логику", "Event-driven")
+    Rel(integration_service, kafka_producer, "Передача данных от устройств", "Event-driven")
+    Rel(integration_service, integration_repository, "Сохранение и чтение данных", "JPA")
+    Rel(integration_repository, integration_db, "Чтение и запись данных", "SQL")
+    Rel(integration_adapter, integration_service, "Получение данных от устройств")
+    Rel(integration_service, integration_adapter, "Передача команд устройству")
+}
+
+' Внешние взаимодействия
+Component_Ext(kafka, "Data Bus (Kafka)", "Асинхронное взаимодействие с устройствами")
+System_Ext(device, "External Device")
+
+' Взаимодействие с внешними системами
+Rel(kafka_producer, kafka, "Отправка обновлений от устройств", "Kafka")
+Rel(kafka, kafka_listener, "Получение команд", "Kafka")
+Rel(integration_adapter, device, "Передача команд")
+Rel(device, integration_adapter, "Получение данных")
+
+@enduml

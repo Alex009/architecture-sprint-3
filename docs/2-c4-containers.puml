@@ -1,5 +1,7 @@
 @startuml
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!define RELATIVE_INCLUDE true
+
+!include C4/C4_Container.puml
 
 ' Основная система
 System_Boundary(c1, "SAAS система") {
@@ -15,6 +17,7 @@ System_Boundary(c1, "SAAS система") {
 
     ' Device Integration Services
     Boundary(device_integration, "Device Integration Services") {
+        Container(rest_adapter, "REST Device Adapter", "Java,Spring", "Адаптер для REST устройств")
         Container(mqtt_adapter, "MQTT Device Adapter", "Java,Spring", "Адаптер для MQTT устройств")
         Container(other_adapter, "Other Device Adapter", "Java,Spring", "Адаптер для других устройств")
     }
@@ -39,7 +42,11 @@ System_Boundary(c1, "SAAS система") {
 System_Ext(sms_gateway, "SMS Gateway", "Отправка SMS")
 System_Ext(email_gateway, "Email Gateway", "Отправка email")
 System_Ext(web_app, "Web Application", "Веб-приложение для пользователей")
-System_Ext(external_device, "External Devices", "Внешние устройства пользователей")
+Boundary(external_devices, "Пользовательские устройства") {
+    System_Ext(external_mqttt_device, "External MQTT Devices", "Внешние устройства пользователей")
+    System_Ext(external_rest_device, "External REST Devices", "Внешние устройства пользователей")
+    System_Ext(external_other_device, "External Other Devices", "Внешние устройства пользователей")
+}
 
 ' Пользователь системы
 Person(user, "User", "Пользователь системы")
@@ -67,7 +74,8 @@ Rel(user_service, kafka, "Команды отправки уведомлений
 Rel(notification_service, sms_gateway, "Отправка SMS", "REST API")
 Rel(notification_service, email_gateway, "Отправка email", "SMTP")
 
-Rel(mqtt_adapter, external_device, "MQTT Communication")
-Rel(other_adapter, external_device, "Other Protocol Communication")
+Rel(mqtt_adapter, external_mqttt_device, "MQTT")
+Rel(other_adapter, external_other_device, "Other Protocol")
+Rel(rest_adapter, external_rest_device, "REST API")
 
 @enduml

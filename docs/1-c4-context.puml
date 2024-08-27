@@ -1,5 +1,7 @@
 @startuml
-!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!define RELATIVE_INCLUDE true
+
+!includeurl C4/C4_Context.puml
 
 Person(user, "Владелец дома", "Пользователь, который управляет системой отопления через веб-интерфейс")
 

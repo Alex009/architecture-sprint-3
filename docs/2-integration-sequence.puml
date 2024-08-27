@@ -1,0 +1,49 @@
+@startuml
+autonumber
+
+participant DeviceService as DS
+participant Kafka as K
+participant IntegrationService as IS
+participant IntegrationRedis as IR
+participant Device as D
+
+par регистрация
+    loop
+    DS --> K: /devices/register/<type> \n ConnectDevice(internal_device_id,deviceinfo)
+    K --> IS: только своего type
+    IS --> D: подключение к устройству\nполучение стартовых данных
+    alt подключение успешно
+        D --> IS: данные устройства
+        IS --> IR: сохранить\nданные устройства\ninternal_device_id
+        IS --> K: /devices/register-success \n в теле internal_device_id и данные
+    else ошибка подключения
+        IS --> K: /devices/register-failed \n в теле internal_device_id и ошибка
+    end
+        K --> DS: определяем устройство по internal_device_id
+    end
+
+else обновление данных
+
+    loop
+    IS --> IR: получить данные устройств для опроса
+    IR --> IS: устройства и internal_device_id
+    IS --> D: получение данных с датчика
+    D --> IS: данные с датчика
+    IS --> K: /devices/update \n в теле internal_device_id и данные
+    K --> DS: определяем устройство по internal_device_id
+    end
+else передача команд
+    loop
+    DS --> K: /devices/command \n internal_device_id + unified_command
+    K --> IS: получает команду
+    IS --> IR: поиск по internal_device_id
+    IR --> IS: данные устройства
+    alt данные найдены - устройство нужного типа
+    IS --> D: передача команды
+    else данных нет
+        note right of IS: это устройство не нашего типа, обработает другой сервис
+    end
+    end
+end
+
+@enduml
