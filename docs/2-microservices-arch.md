@@ -103,6 +103,10 @@ management service при попытке пользователя подключ
 
 Это будет разработанный нашей компанией сервис.
 
+Диаграмма компонентов - [2-c4-components-devices.puml](2-c4-components-devices.puml)
+
+Диаграмма процесса проверки доступа пользователя к устройству - [2-devices-permissions-sequence.puml](2-devices-permissions-sequence.puml) 
+
 ## Telemetry Service (Сервис телеметрии)
 
 Основные функции:
@@ -118,6 +122,8 @@ management service при попытке пользователя подключ
 
 Это будет разработанный нашей компанией сервис.
 
+Диаграмма компонентов - [2-c4-components-telemetry.puml](2-c4-components-telemetry.puml)
+
 ## Automation Service (Сервис автоматизации)
 
 Основные функции:
@@ -131,6 +137,8 @@ management service при попытке пользователя подключ
 - Получение данных из Telemetry Service.
 
 Это будет разработанный нашей компанией сервис.
+
+Диаграмма компонентов - [2-c4-components-automation.puml](2-c4-components-automation.puml)
 
 ## Notification Service (Сервис уведомлений)
 
@@ -154,6 +162,8 @@ management service при попытке пользователя подключ
 
 А также собственное решение позволит предоставить для других микросервисов наиболее удобный способ взаимодействия для
 решения задач нашей системы.
+
+Диаграмма компонентов - [2-c4-components-notification.puml](2-c4-components-notification.puml)
 
 ## API Gateway
 

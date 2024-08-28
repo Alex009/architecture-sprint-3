@@ -1,0 +1,31 @@
+@startuml
+!define RELATIVE_INCLUDE true
+
+!include C4/C4_Component.puml
+
+Container_Boundary(c1, "Сервис автоматизации") {
+
+    ' Компоненты
+    Component(automation_api, "API автоматизации", "Spring REST Controller", "Обработка запросов на создание и управление сценариями автоматизации")
+    Component(automation_service, "Сервис автоматизации", "Spring Service", "Логика выполнения сценариев автоматизации")
+    Component(rule_engine, "Rule Engine", "Java Service", "Обработка и выполнение правил автоматизации")
+    Component(automation_repository, "Репозиторий сценариев", "Spring Data JPA", "Хранение и управление сценариями автоматизации")
+    Component(automation_db, "База данных сценариев", "PostgreSQL", "Хранение данных о сценариях автоматизации")
+
+    ' Взаимодействие между компонентами
+    Rel(automation_api, automation_service, "Передача запросов на обработку сценариев", "REST API")
+    Rel(automation_service, rule_engine, "Выполнение сценариев автоматизации")
+    Rel(automation_service, automation_repository, "Управление сценариями автоматизации", "JPA")
+    Rel(automation_repository, automation_db, "Чтение и запись данных о сценариях", "SQL")
+}
+
+' Внешние взаимодействия
+Component_Ext(api_gateway, "API Gateway", "Маршрутизация запросов, проверка JWT")
+Component_Ext(kafka, "Kafka", "Получение событий для триггеров автоматизации")
+
+' Взаимодействие с внешними системами
+Rel(api_gateway, automation_api, "Маршрутизация запросов на управление автоматизацией", "REST API")
+Rel(kafka, automation_service, "Получение событий для выполнения сценариев", "Kafka")
+Rel(rule_engine, kafka, "Отправка команд для управления устройствами", "Kafka")
+
+@enduml

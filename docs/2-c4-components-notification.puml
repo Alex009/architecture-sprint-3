@@ -1,0 +1,32 @@
+@startuml
+!define RELATIVE_INCLUDE true
+
+!include C4/C4_Component.puml
+
+Container_Boundary(c1, "Сервис уведомлений") {
+
+    ' Компоненты
+    Component(notification_api, "API уведомлений", "Spring REST Controller", "Обработка входящих запросов на отправку уведомлений")
+    Component(notification_service, "Сервис уведомлений", "Spring Service", "Обработка и маршрутизация уведомлений")
+    Component(sms_sender, "Отправитель SMS", "Java Service", "Отправка SMS через внешний шлюз")
+    Component(email_sender, "Отправитель Email", "Java Service", "Отправка Email через SMTP")
+
+    ' Взаимодействие между компонентами
+    Rel(notification_api, notification_service, "Маршрутизация запросов на обработку уведомлений", "REST API")
+    Rel(notification_service, sms_sender, "Отправка SMS уведомлений")
+    Rel(notification_service, email_sender, "Отправка Email уведомлений")
+}
+
+' Внешние взаимодействия
+Component_Ext(api_gateway, "API Gateway", "Маршрутизация запросов, проверка JWT")
+Component_Ext(kafka, "Kafka", "Обработка событий от других сервисов")
+System_Ext(sms_gateway, "SMS Gateway", "Внешняя система для отправки SMS")
+System_Ext(email_gateway, "Email Gateway", "Внешняя система для отправки Email")
+
+' Взаимодействие с внешними системами
+Rel(api_gateway, notification_api, "Маршрутизация запросов на отправку уведомлений", "REST API")
+Rel(kafka, notification_service, "Получение событий для отправки уведомлений", "Kafka")
+Rel(sms_sender, sms_gateway, "Отправка SMS уведомлений", "REST API")
+Rel(email_sender, email_gateway, "Отправка Email уведомлений", "SMTP")
+
+@enduml
