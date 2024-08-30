@@ -1,0 +1,376 @@
+openapi: 3.0.3
+info:
+  title: Device Management Service API
+  description: API для управления устройствами в системе умного дома.
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/devices
+    description: Основной сервер API
+
+paths:
+  /devices:
+    get:
+      summary: Получить список всех устройств пользователя
+      description: Возвращает список всех устройств, зарегистрированных в системе, доступных текущему пользователю.
+      tags:
+        - Devices
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Успешный запрос, возвращает список устройств.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+        '401':
+          description: Не авторизован.
+
+    post:
+      summary: Зарегистрировать новое устройство
+      description: Добавляет новое устройство в систему и отправляет запрос на регистрацию в сервис интеграции устройств.
+      tags:
+        - Devices
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewDevice'
+      responses:
+        '201':
+          description: Устройство успешно зарегистрировано и отправлен запрос на интеграцию.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '400':
+          description: Некорректные данные.
+        '409':
+          description: Конфликт, устройство с таким идентификатором уже существует.
+
+  /devices/{deviceId}:
+    get:
+      summary: Получить информацию об устройстве
+      description: Возвращает информацию о конкретном устройстве, включая список настроек и датчиков.
+      tags:
+        - Devices
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          description: Уникальный идентификатор устройства
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешный запрос, возвращает данные устройства.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceDetail'
+        '403':
+          description: Доступ запрещен.
+        '404':
+          description: Устройство не найдено.
+
+    delete:
+      summary: Удалить устройство
+      description: Удаляет устройство из системы и отменяет его регистрацию в сервисе интеграции устройств.
+      tags:
+        - Devices
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          description: Уникальный идентификатор устройства
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Устройство успешно удалено.
+        '403':
+          description: Доступ запрещен.
+        '404':
+          description: Устройство не найдено.
+
+  /devices/{deviceId}/settings:
+    get:
+      summary: Получить настройки устройства
+      description: Возвращает список настроек устройства.
+      tags:
+        - Device Settings
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          description: Уникальный идентификатор устройства
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешный запрос, возвращает список настроек устройства.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeviceSetting'
+        '403':
+          description: Доступ запрещен.
+        '404':
+          description: Устройство не найдено.
+
+    post:
+      summary: Обновить настройки устройства
+      description: Обновляет настройки конкретного устройства.
+      tags:
+        - Device Settings
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          description: Уникальный идентификатор устройства
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDeviceSetting'
+      responses:
+        '200':
+          description: Настройки устройства успешно обновлены.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceSetting'
+        '403':
+          description: Доступ запрещен.
+        '404':
+          description: Устройство не найдено.
+
+  /devices/{deviceId}/command:
+    post:
+      summary: Отправить команду устройству
+      description: Отправляет команду "включить" или "выключить" устройству через сервис интеграции устройств.
+      tags:
+        - Device Commands
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          description: Уникальный идентификатор устройства
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCommand'
+      responses:
+        '202':
+          description: Команда успешно отправлена.
+        '403':
+          description: Доступ запрещен.
+        '404':
+          description: Устройство не найдено.
+        '500':
+          description: Ошибка отправки команды.
+
+  /service/validate-access:
+    post:
+      summary: Проверить доступ пользователя к устройству
+      description: Проверяет, есть ли у пользователя доступ к указанному устройству. Этот запрос используется для межсервисного взаимодействия.
+      tags:
+        - Service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessCheckRequest'
+      responses:
+        '200':
+          description: Успешная проверка доступа.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessCheckResponse'
+        '404':
+          description: Устройство или пользователь не найдены.
+        '403':
+          description: Доступ запрещен.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Device:
+      type: object
+      properties:
+        device_id:
+          type: string
+          description: Уникальный идентификатор устройства
+        device_name:
+          type: string
+          description: Имя устройства
+        home_id:
+          type: string
+          description: Идентификатор дома, к которому привязано устройство
+      required:
+        - device_id
+        - device_name
+        - home_id
+
+    DeviceDetail:
+      type: object
+      properties:
+        device_id:
+          type: string
+          description: Уникальный идентификатор устройства
+        device_name:
+          type: string
+          description: Имя устройства
+        home_id:
+          type: string
+          description: Идентификатор дома, к которому привязано устройство
+        settings:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeviceSetting'
+          description: Список настроек устройства
+        sensors:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeviceSensor'
+          description: Список датчиков устройства
+      required:
+        - device_id
+        - device_name
+        - home_id
+        - settings
+        - sensors
+
+    NewDevice:
+      type: object
+      properties:
+        device_name:
+          type: string
+          description: Имя устройства
+        device_type:
+          type: string
+          description: Тип устройства (не отображается пользователю)
+        home_id:
+          type: string
+          description: Идентификатор дома, к которому будет привязано устройство
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Дополнительные данные для регистрации устройства в сервисе интеграции
+      required:
+        - device_name
+        - device_type
+        - home_id
+        - metadata
+
+    DeviceSetting:
+      type: object
+      properties:
+        setting_id:
+          type: string
+          description: Уникальный идентификатор настройки
+        setting_name:
+          type: string
+          description: Имя настройки
+        setting_value:
+          type: string
+          description: Значение настройки
+      required:
+        - setting_id
+        - setting_name
+        - setting_value
+
+    DeviceSensor:
+      type: object
+      properties:
+        sensor_id:
+          type: string
+          description: Уникальный идентификатор датчика
+        sensor_name:
+          type: string
+          description: Имя датчика
+      required:
+        - sensor_id
+        - sensor_name
+
+    DeviceCommand:
+      type: object
+      properties:
+        command_id:
+          type: string
+          description: Уникальный идентификатор команды
+        command:
+          type: string
+          enum:
+            - turn-on
+            - turn-off
+          description: Тип команды
+      required:
+        - command_id
+        - command
+
+    UpdateDeviceSetting:
+      type: object
+      properties:
+        setting_name:
+          type: string
+          description: Имя настройки
+        setting_value:
+          type: string
+          description: Значение настройки
+      required:
+        - setting_name
+        - setting_value
+
+    AccessCheckRequest:
+      type: object
+      properties:
+        user_id:
+          type: string
+          description: Идентификатор пользователя
+        device_id:
+          type: string
+          description: Идентификатор устройства
+      required:
+        - user_id
+        - device_id
+
+    AccessCheckResponse:
+      type: object
+      properties:
+        has_access:
+          type: boolean
+          description: Флаг наличия доступа
+      required:
+        - has_access
