@@ -1,0 +1,134 @@
+openapi: 3.0.3
+info:
+  title: Telemetry Service API
+  description: API для получения данных телеметрии в системе умного дома.
+  version: 1.0.0
+servers:
+  - url: http://telemetry.smart-home.local
+    description: Основной сервер API
+
+paths:
+  /devices/{deviceId}/telemetry/latest:
+    get:
+      summary: Получить последние данные телеметрии для устройства
+      description: Возвращает последние данные телеметрии для всех сенсоров указанного устройства.
+      tags:
+        - Telemetry
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          description: Уникальный идентификатор устройства
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешный запрос, возвращает данные телеметрии устройства.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TelemetryData'
+              examples:
+                telemetryDataExample:
+                  $ref: '#/components/examples/telemetryData'
+        '401':
+          description: Не авторизован.
+        '403':
+          description: Доступ запрещен.
+        '404':
+          description: Устройство не найдено.
+
+  /devices/{deviceId}/telemetry:
+    get:
+      summary: Получить исторические данные телеметрии для устройства
+      description: Возвращает исторические данные телеметрии для всех сенсоров указанного устройства за заданный период.
+      tags:
+        - Telemetry
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          description: Уникальный идентификатор устройства
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          required: true
+          description: Дата начала периода (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: true
+          description: Дата окончания периода (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Успешный запрос, возвращает исторические данные телеметрии устройства.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TelemetryData'
+              examples:
+                telemetryDataExample:
+                  $ref: '#/components/examples/telemetryData'
+        '401':
+          description: Не авторизован.
+        '403':
+          description: Доступ запрещен.
+        '404':
+          description: Устройство не найдено.
+        '400':
+          description: Некорректные параметры запроса.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    TelemetryData:
+      type: object
+      properties:
+        sensor_id:
+          type: string
+          description: Уникальный идентификатор датчика
+        timestamp:
+          type: string
+          format: date-time
+          description: Время получения данных
+        data:
+          type: object
+          description: Данные телеметрии, зависят от типа датчика
+          additionalProperties: true
+      required:
+        - sensor_id
+        - timestamp
+        - data
+
+  examples:
+    telemetryData:
+      summary: Пример данных телеметрии
+      value:
+        - sensor_id: "987e6543-e21b-32c4-b765-876543210000"
+          timestamp: "2023-08-28T12:34:56Z"
+          data:
+            temperature: 22.5
+            humidity: 45
+        - sensor_id: "987e6543-e21b-32c4-b765-876543210001"
+          timestamp: "2023-08-28T12:34:56Z"
+          data:
+            pressure: 1013

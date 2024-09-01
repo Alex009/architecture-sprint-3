@@ -16,6 +16,4 @@
 
 Описание REST API:
 1. сервис управления устройствами - [4-devices-management.yaml](4-devices-management.yaml)
-2. сервис телеметрии - 
-
-
+2. сервис телеметрии - [4-telemetry.yaml](4-telemetry.yaml)
