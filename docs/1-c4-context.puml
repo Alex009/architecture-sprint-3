@@ -1,7 +1,7 @@
 @startuml
 !define RELATIVE_INCLUDE true
 
-!includeurl C4/C4_Context.puml
+!include C4/C4_Context.puml
 
 Person(user, "Владелец дома", "Пользователь, который управляет системой отопления через веб-интерфейс")
 

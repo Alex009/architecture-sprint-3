@@ -1,3 +1,12 @@
+# Анализ и проектирование
+
+Результаты анализа и проектирования доступны в папке docs.
+
+1. [1-analyze.md](docs/1-analyze.md) - анализ системы
+2. [2-microservices-arch.md](docs/2-microservices-arch.md) - проектирование микросервисов
+3. [3-entity-relations.md](docs/3-entity-relations.md) - ER диаграмма
+4. [4-api.md](docs/4-api.md) - описание API нескольких сервисов
+
 # Базовая настройка
 
 ## Запуск minikube
