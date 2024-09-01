@@ -15,7 +15,7 @@ paths:
       tags:
         - Devices
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         '200':
           description: Успешный запрос, возвращает список устройств.
@@ -37,7 +37,7 @@ paths:
       tags:
         - Devices
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       requestBody:
         required: true
         content:
@@ -69,7 +69,7 @@ paths:
       tags:
         - Devices
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - name: deviceId
           in: path
@@ -98,7 +98,7 @@ paths:
       tags:
         - Devices
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - name: deviceId
           in: path
@@ -121,7 +121,7 @@ paths:
       tags:
         - Device Settings
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - name: deviceId
           in: path
@@ -152,7 +152,7 @@ paths:
       tags:
         - Device Settings
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - name: deviceId
           in: path
@@ -191,7 +191,7 @@ paths:
       tags:
         - Device Commands
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - name: deviceId
           in: path
@@ -243,8 +243,6 @@ paths:
                   $ref: '#/components/examples/AccessCheckResponseExample'
         '404':
           description: Устройство или пользователь не найдены.
-        '403':
-          description: Доступ запрещен.
 
 components:
   securitySchemes:
