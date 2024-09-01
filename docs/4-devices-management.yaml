@@ -25,6 +25,9 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Device'
+              examples:
+                example:
+                  $ref: '#/components/examples/DevicesListExample'
         '401':
           description: Не авторизован.
 
@@ -41,6 +44,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/NewDevice'
+            examples:
+              example:
+                $ref: '#/components/examples/NewDeviceExample'
       responses:
         '201':
           description: Устройство успешно зарегистрировано и отправлен запрос на интеграцию.
@@ -48,6 +54,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Device'
+              examples:
+                example:
+                  $ref: '#/components/examples/DeviceExample'
         '400':
           description: Некорректные данные.
         '409':
@@ -75,6 +84,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeviceDetail'
+              examples:
+                example:
+                  $ref: '#/components/examples/DeviceDetailExample'
         '403':
           description: Доступ запрещен.
         '404':
@@ -126,6 +138,9 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/DeviceSetting'
+              examples:
+                example:
+                  $ref: '#/components/examples/DeviceSettingsExample'
         '403':
           description: Доступ запрещен.
         '404':
@@ -151,6 +166,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateDeviceSetting'
+            examples:
+              example:
+                $ref: '#/components/examples/UpdateDeviceSettingExample'
       responses:
         '200':
           description: Настройки устройства успешно обновлены.
@@ -158,6 +176,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeviceSetting'
+              examples:
+                example:
+                  $ref: '#/components/examples/DeviceSettingExample'
         '403':
           description: Доступ запрещен.
         '404':
@@ -184,6 +205,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/DeviceCommand'
+            examples:
+              example:
+                $ref: '#/components/examples/DeviceCommandExample'
       responses:
         '202':
           description: Команда успешно отправлена.
@@ -191,8 +215,6 @@ paths:
           description: Доступ запрещен.
         '404':
           description: Устройство не найдено.
-        '500':
-          description: Ошибка отправки команды.
 
   /service/validate-access:
     post:
@@ -206,6 +228,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AccessCheckRequest'
+            examples:
+              example:
+                $ref: '#/components/examples/AccessCheckRequestExample'
       responses:
         '200':
           description: Успешная проверка доступа.
@@ -213,6 +238,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccessCheckResponse'
+              examples:
+                example:
+                  $ref: '#/components/examples/AccessCheckResponseExample'
         '404':
           description: Устройство или пользователь не найдены.
         '403':
@@ -327,9 +355,6 @@ components:
     DeviceCommand:
       type: object
       properties:
-        command_id:
-          type: string
-          description: Уникальный идентификатор команды
         command:
           type: string
           enum:
@@ -337,7 +362,6 @@ components:
             - turn-off
           description: Тип команды
       required:
-        - command_id
         - command
 
     UpdateDeviceSetting:
@@ -374,3 +398,90 @@ components:
           description: Флаг наличия доступа
       required:
         - has_access
+
+  examples:
+    DevicesListExample:
+      summary: Пример списка устройств
+      value:
+        - device_id: "123e4567-e89b-12d3-a456-426614174000"
+          device_name: "Умный термостат"
+          home_id: "123e4567-e89b-12d3-home-426614174000"
+        - device_id: "123e4567-e89b-12d3-a456-426614174001"
+          device_name: "Датчик дыма"
+          home_id: "123e4567-e89b-12d3-home-426614174000"
+
+    DeviceExample:
+      summary: Пример устройства
+      value:
+        device_id: "123e4567-e89b-12d3-a456-426614174000"
+        device_name: "Умный термостат"
+        home_id: "123e4567-e89b-12d3-home-426614174000"
+
+    DeviceDetailExample:
+      summary: Пример детальной информации об устройстве
+      value:
+        device_id: "123e4567-e89b-12d3-a456-426614174000"
+        device_name: "Умный термостат"
+        home_id: "123e4567-e89b-12d3-home-426614174000"
+        settings:
+          - setting_id: "123e4567-e89b-12d3-set1-426614174000"
+            setting_name: "Температура"
+            setting_value: "22"
+          - setting_id: "123e4567-e89b-12d3-set2-426614174000"
+            setting_name: "Режим работы"
+            setting_value: "Автоматический"
+        sensors:
+          - sensor_id: "123e4567-e89b-12d3-sen1-426614174000"
+            sensor_name: "Датчик температуры"
+          - sensor_id: "123e4567-e89b-12d3-sen2-426614174000"
+            sensor_name: "Датчик влажности"
+
+    NewDeviceExample:
+      summary: Пример регистрации нового устройства
+      value:
+        device_name: "Умный термостат"
+        device_type: "thermostat"
+        home_id: "123e4567-e89b-12d3-home-426614174000"
+        metadata:
+          manufacturer: "SmartHome Inc."
+          model: "T-1000"
+          serial_number: "SN1234567890"
+
+    DeviceSettingsExample:
+      summary: Пример настроек устройства
+      value:
+        - setting_id: "123e4567-e89b-12d3-set1-426614174000"
+          setting_name: "Температура"
+          setting_value: "22"
+        - setting_id: "123e4567-e89b-12d3-set2-426614174000"
+          setting_name: "Режим работы"
+          setting_value: "Автоматический"
+
+    UpdateDeviceSettingExample:
+      summary: Пример обновления настройки устройства
+      value:
+        setting_name: "Температура"
+        setting_value: "25"
+
+    DeviceSettingExample:
+      summary: Пример настройки устройства
+      value:
+        setting_id: "123e4567-e89b-12d3-set1-426614174000"
+        setting_name: "Температура"
+        setting_value: "25"
+
+    DeviceCommandExample:
+      summary: Пример команды для устройства
+      value:
+        command: "turn-on"
+
+    AccessCheckRequestExample:
+      summary: Пример запроса на проверку доступа
+      value:
+        user_id: "123e4567-e89b-12d3-usr1-426614174000"
+        device_id: "123e4567-e89b-12d3-a456-426614174000"
+
+    AccessCheckResponseExample:
+      summary: Пример ответа на проверку доступа
+      value:
+        has_access: true
