@@ -1,31 +1,31 @@
-### read homes list for user-1
-GET http://localhost:8080/homes
+### read devices list for user-1
+GET http://localhost:8081/devices
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3MjUyMDU2NTksImV4cCI6MTc1Njc0MTY1OSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoidXNlci0xIn0.KSz5Y27TIApz3Og6J_xc0NposG-NjUsQlehNuJxlmRE
 Content-Type: application/json
 
-### check access to home
-POST http://localhost:8080/service/validate-access
+### check access to device
+POST http://localhost:8081/service/validate-access
 Content-Type: application/json
 
 {
   "userId": "user-1",
-  "homeId": "home-01"
+  "deviceId": "device-01"
 }
 
-### check access to not exist home
-POST http://localhost:8080/service/validate-access
+### check access to not exist device
+POST http://localhost:8081/service/validate-access
 Content-Type: application/json
 
 {
   "userId": "user-1",
-  "homeId": "home-200"
+  "deviceId": "device-200"
 }
 
-### check not exist user access to home
-POST http://localhost:8080/service/validate-access
+### check not exist user access to device
+POST http://localhost:8081/service/validate-access
 Content-Type: application/json
 
 {
   "userId": "user-22",
-  "homeId": "home-01"
+  "deviceId": "device-01"
 }
