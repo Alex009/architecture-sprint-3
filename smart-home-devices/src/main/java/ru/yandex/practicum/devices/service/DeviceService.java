@@ -14,6 +14,7 @@ import ru.yandex.practicum.devices.repository.DeviceSensorRepository;
 import ru.yandex.practicum.devices.repository.DeviceSettingRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -67,7 +68,13 @@ public class DeviceService {
         deviceRepository.save(device);
 
         // Отправляем сообщение в Kafka о необходимости регистрации устройства
-        kafkaProducerService.sendRegisterDevice(device);
+        kafkaProducerService.sendRegisterDevice(
+                new KafkaProducerService.RegisterDeviceMessage(
+                        device.getDeviceId(),
+                        newDeviceDTO.getDeviceType(),
+                        newDeviceDTO.getMetadata()
+                )
+        );
 
         // Вернуть информацию о созданном устройстве
         return convertToDeviceDTO(device);
@@ -93,7 +100,9 @@ public class DeviceService {
         deviceRepository.delete(device);
 
         // Отправляем сообщение в Kafka о том, что устройство было удалено
-        kafkaProducerService.sendDeleteDevice(device.getDeviceId());
+        kafkaProducerService.sendDeleteDevice(
+                new KafkaProducerService.DeleteDeviceMessage(device.getDeviceId())
+        );
     }
 
     public List<DeviceSettingDTO> getDeviceSettings(String userId, String deviceId) {
@@ -108,14 +117,26 @@ public class DeviceService {
         Device device = getAccessedDevice(userId, deviceId);
 
         // Отправляем сообщение в Kafka для обновления настройки устройства
-        kafkaProducerService.sendUpdateDeviceSetting(device.getDeviceId(), updateDeviceSettingDTO);
+        kafkaProducerService.sendDeviceCommand(
+                new KafkaProducerService.DeviceCommandMessage(
+                        device.getDeviceId(),
+                        KafkaProducerService.DeviceCommandMessage.CommandType.CHANGE_SETTING,
+                        Map.of(updateDeviceSettingDTO.getSettingId(), updateDeviceSettingDTO.getSettingValue())
+                )
+        );
     }
 
     public void sendDeviceCommand(String userId, String deviceId, DeviceCommandDTO deviceCommandDTO) {
         Device device = getAccessedDevice(userId, deviceId);
 
         // Отправляем команду устройству через Kafka
-        kafkaProducerService.sendDeviceCommand(device.getDeviceId(), deviceCommandDTO);
+        kafkaProducerService.sendDeviceCommand(
+                new KafkaProducerService.DeviceCommandMessage(
+                        device.getDeviceId(),
+                        convertCommand(deviceCommandDTO.getCommand()),
+                        Map.of()
+                )
+        );
     }
 
     private Device getAccessedDevice(String userId, String deviceId) {
@@ -147,5 +168,17 @@ public class DeviceService {
                 deviceSensor.getSensorName(),
                 deviceSensor.getSensorType()
         );
+    }
+
+    private KafkaProducerService.DeviceCommandMessage.CommandType convertCommand(DeviceCommandDTO.CommandType commandType) {
+        switch (commandType) {
+            case TURN_ON -> {
+                return KafkaProducerService.DeviceCommandMessage.CommandType.TURN_ON;
+            }
+            case TURN_OFF -> {
+                return KafkaProducerService.DeviceCommandMessage.CommandType.TURN_OFF;
+            }
+            default -> throw new IllegalArgumentException("Unknown command type: " + commandType);
+        }
     }
 }

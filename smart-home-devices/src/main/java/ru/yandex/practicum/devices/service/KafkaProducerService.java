@@ -5,9 +5,6 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.devices.dto.DeviceCommandDTO;
-import ru.yandex.practicum.devices.dto.UpdateDeviceSettingDTO;
-import ru.yandex.practicum.devices.model.Device;
 
 import java.util.Map;
 
@@ -21,42 +18,36 @@ public class KafkaProducerService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendRegisterDevice(Device device) {
-        RegisterDeviceMessage message = new RegisterDeviceMessage(device.getDeviceId(), device.getDeviceName(), device.getHomeId());
+    public void sendRegisterDevice(RegisterDeviceMessage message) {
         kafkaTemplate.send("devices.integration.register.start", message);
     }
 
-    public void sendDeleteDevice(String deviceId) {
-        kafkaTemplate.send("devices.deletion", deviceId);
+    public void sendDeleteDevice(DeleteDeviceMessage message) {
+        kafkaTemplate.send("devices.integration.delete", message);
     }
 
-    public void sendUpdateDeviceSetting(String deviceId, UpdateDeviceSettingDTO updateDeviceSettingDTO) {
-//        kafkaTemplate.send("devices.update-setting", new DeviceSettingUpdateMessage(deviceId, updateDeviceSettingDTO));
-    }
-
-    public void sendDeviceCommand(String deviceId, DeviceCommandDTO deviceCommandDTO) {
-//        kafkaTemplate.send("devices.integration.command.run", new DeviceCommandMessage(
-//                deviceId,
-//                deviceCommandDTO.getCommandId(),
-//                deviceCommandDTO.getCommand(),
-//                deviceCommandDTO.getParameters()
-//        ));
+    public void sendDeviceCommand(DeviceCommandMessage message) {
+        kafkaTemplate.send("devices.integration.command.run", message);
     }
 
     @Data
     @AllArgsConstructor
-    private static class RegisterDeviceMessage {
+    public static class RegisterDeviceMessage {
         private String deviceId;
-        private String deviceName;
-        private String homeId;
+        private String deviceType;
+        private Map<String, Object> metadata;
     }
 
     @Data
     @AllArgsConstructor
-    public class DeviceCommandMessage {
-
+    public static class DeleteDeviceMessage {
         private String deviceId;
-        private String commandId;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class DeviceCommandMessage {
+        private String deviceId;
         private CommandType command;
         private Map<String, Object> parameters;
 
