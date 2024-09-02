@@ -21,21 +21,8 @@ jobs:
         uses: ndeloof/install-compose-action@v0.0.1
 
       - name: Build and start services
-        run: docker-compose up -d --build
-
-      - name: Wait for services to be healthy
-        run: |
-          for i in {1..10}; do
-            if [ $(docker-compose ps -q | xargs docker inspect -f '{{ .State.Health.Status }}' | grep -c unhealthy) -eq 0 ]; then
-              echo "All services are healthy!"
-              exit 0
-            fi
-            echo "Waiting for services to be healthy..."
-            sleep 10
-          done
-          echo "Services did not become healthy in time"
-          docker-compose logs
-          exit 1
+        run: docker-compose up -d --build --wait
+        timeout-minutes: 5
 
       - name: Shut down services
         run: docker-compose down
