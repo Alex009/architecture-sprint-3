@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://smart-home-homes-postgresql.default:5432/smart_home
+    url: jdbc:postgresql://localhost:5432/devices
     username: your_username
     password: your_password
     hikari:
@@ -14,6 +14,11 @@ spring:
       hibernate:
         boot.allow_jdbc_metadata_access: false
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
   security:
     jwt:
       secret: your-secret-key

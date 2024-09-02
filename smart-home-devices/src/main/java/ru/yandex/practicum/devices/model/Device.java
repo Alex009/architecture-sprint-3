@@ -2,6 +2,7 @@ package ru.yandex.practicum.devices.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "devices")
@@ -18,4 +19,8 @@ public class Device {
 
     @Column(name = "home_id", nullable = false)
     private String homeId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private DeviceStatus status;
 }

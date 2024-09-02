@@ -1,0 +1,86 @@
+name: smart-home-development
+
+services:
+  homes:
+    build:
+      dockerfile: Dockerfile
+      context: smart-home-homes
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/homes
+      SPRING_DATASOURCE_USERNAME: test
+      SPRING_DATASOURCE_PASSWORD: test
+      SPRING_SECURITY_JWT_SECRET: 1be58f3f3a4c8277dd28898f7eb2f9a66f20fcdc74d79a42a8d2314c39745931b4c5a8be869085285111ce64e02a20ec534394eb9033fb5e85f400a3ba1fe3dd057644708559a835a97de35078a9b741abb4c4cb89447c481a82794d1b364c374145f7fdc79cba2e03617e2b70be743f9d9f5390aab7dd8ed3eeaf4d075ff19c
+    depends_on:
+      db:
+        condition: service_healthy
+
+  devices:
+    build:
+      dockerfile: Dockerfile
+      context: smart-home-devices
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/devices
+      SPRING_DATASOURCE_USERNAME: test
+      SPRING_DATASOURCE_PASSWORD: test
+      SPRING_SECURITY_JWT_SECRET: 1be58f3f3a4c8277dd28898f7eb2f9a66f20fcdc74d79a42a8d2314c39745931b4c5a8be869085285111ce64e02a20ec534394eb9033fb5e85f400a3ba1fe3dd057644708559a835a97de35078a9b741abb4c4cb89447c481a82794d1b364c374145f7fdc79cba2e03617e2b70be743f9d9f5390aab7dd8ed3eeaf4d075ff19c
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      HOME_SERVICE_URL: http://homes:8080
+    depends_on:
+      db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      homes:
+        condition: service_started
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ./dev-database-init.sql:/docker-entrypoint-initdb.d/db-init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U test" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      KAFKA_OPTS: "-Dzookeeper.4lw.commands.whitelist=ruok"
+    healthcheck:
+      test: [ "CMD-SHELL", "echo ruok | nc localhost 2181 | grep imok" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    ports:
+      - "127.0.0.1:9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: [ "CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    depends_on:
+      zookeeper:
+        condition: service_healthy

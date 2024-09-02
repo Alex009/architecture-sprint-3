@@ -60,8 +60,8 @@ public class DeviceController {
     @PostMapping("/{deviceId}/settings")
     public ResponseEntity<DeviceSettingDTO> updateDeviceSetting(@PathVariable String deviceId, @RequestBody UpdateDeviceSettingDTO updateDeviceSettingDTO) {
         String userId = getAuthenticatedUserId();
-        DeviceSettingDTO updatedSetting = deviceService.updateDeviceSetting(userId, deviceId, updateDeviceSettingDTO);
-        return ResponseEntity.ok(updatedSetting);
+        deviceService.updateDeviceSetting(userId, deviceId, updateDeviceSettingDTO);
+        return ResponseEntity.accepted().build();
     }
 
     @PostMapping("/{deviceId}/command")

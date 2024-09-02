@@ -1,0 +1,2 @@
+CREATE DATABASE homes;
+CREATE DATABASE devices;
