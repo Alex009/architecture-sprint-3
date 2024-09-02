@@ -1,6 +1,7 @@
 package ru.yandex.practicum.devices.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -23,4 +24,14 @@ public class Device {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private DeviceStatus status;
+
+    @Column(name = "status_details")
+    private String statusDetails;
+
+    @Data
+    @AllArgsConstructor
+    public static class StatusErrorDetails {
+        private String message;
+        private int code;
+    }
 }
