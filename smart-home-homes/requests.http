@@ -1,3 +1,6 @@
+### health
+GET http://localhost:8080/actuator/health
+
 ### create home for user-1
 POST http://localhost:8080/homes
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3MjUyMDU2NTksImV4cCI6MTc1Njc0MTY1OSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoidXNlci0xIn0.KSz5Y27TIApz3Og6J_xc0NposG-NjUsQlehNuJxlmRE

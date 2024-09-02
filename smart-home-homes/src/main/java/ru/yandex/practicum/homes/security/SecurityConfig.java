@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/service/**").permitAll()  // Разрешаем доступ к эндпоинтам /service/** без авторизации
-                        .requestMatchers("/health").permitAll()  // Разрешаем доступ к /health без авторизации
+                        .requestMatchers("/actuator/**").permitAll()  // Разрешаем доступ к /actuator/** без авторизации
                         .anyRequest().authenticated()            // Требуем авторизацию по JWT для всех остальных запросов
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
