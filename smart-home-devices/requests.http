@@ -11,6 +11,11 @@ GET http://localhost:8081/devices/9a6118ce-dcfb-4038-a4ad-1353b3311f95
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3MjUyMDU2NTksImV4cCI6MTc1Njc0MTY1OSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoidXNlci0xIn0.KSz5Y27TIApz3Og6J_xc0NposG-NjUsQlehNuJxlmRE
 Content-Type: application/json
 
+### read settings of device for user-1
+GET http://localhost:8081/devices/9a6118ce-dcfb-4038-a4ad-1353b3311f95/settings
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3MjUyMDU2NTksImV4cCI6MTc1Njc0MTY1OSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoidXNlci0xIn0.KSz5Y27TIApz3Og6J_xc0NposG-NjUsQlehNuJxlmRE
+Content-Type: application/json
+
 ### create new device for user-1
 POST http://localhost:8081/devices
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3MjUyMDU2NTksImV4cCI6MTc1Njc0MTY1OSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoidXNlci0xIn0.KSz5Y27TIApz3Og6J_xc0NposG-NjUsQlehNuJxlmRE
