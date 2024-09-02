@@ -1,15 +1,17 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="smart-home-homes" type="Application" factoryName="Application">
+  <configuration default="false" name="smart-home-devices" type="Application" factoryName="Application">
     <option name="ALTERNATIVE_JRE_PATH" value="17" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <envs>
+      <env name="HOME_SERVICE_URL" value="http://127.0.0.1:8080" />
       <env name="SPRING_DATASOURCE_PASSWORD" value="test" />
-      <env name="SPRING_DATASOURCE_URL" value="jdbc:postgresql://127.0.0.1:5432/homes" />
+      <env name="SPRING_DATASOURCE_URL" value="jdbc:postgresql://127.0.0.1:5432/devices" />
       <env name="SPRING_DATASOURCE_USERNAME" value="test" />
       <env name="SPRING_SECURITY_JWT_SECRET" value="1be58f3f3a4c8277dd28898f7eb2f9a66f20fcdc74d79a42a8d2314c39745931b4c5a8be869085285111ce64e02a20ec534394eb9033fb5e85f400a3ba1fe3dd057644708559a835a97de35078a9b741abb4c4cb89447c481a82794d1b364c374145f7fdc79cba2e03617e2b70be743f9d9f5390aab7dd8ed3eeaf4d075ff19c" />
+      <env name="SERVER_PORT" value="8081" />
     </envs>
-    <option name="MAIN_CLASS_NAME" value="ru.yandex.practicum.homes.HomeServiceApplication" />
-    <module name="smart-home-homes" />
+    <option name="MAIN_CLASS_NAME" value="ru.yandex.practicum.devices.SmartHomeDevicesApplication" />
+    <module name="smart-home-devices" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="ru.yandex.practicum.smarthome.*" />
