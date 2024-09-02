@@ -3,6 +3,7 @@
     <option name="ALTERNATIVE_JRE_PATH" value="17" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <envs>
+      <env name="LOGGING_LEVEL_ROOT" value="DEBUG" />
       <env name="SPRING_DATASOURCE_PASSWORD" value="test" />
       <env name="SPRING_DATASOURCE_URL" value="jdbc:postgresql://127.0.0.1:5432/homes" />
       <env name="SPRING_DATASOURCE_USERNAME" value="test" />
