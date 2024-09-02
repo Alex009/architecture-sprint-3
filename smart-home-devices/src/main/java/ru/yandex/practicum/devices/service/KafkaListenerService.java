@@ -2,11 +2,12 @@ package ru.yandex.practicum.devices.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.devices.exception.DeviceNotFoundException;
+import ru.yandex.practicum.devices.message.DeviceRegistrationFailedMessage;
+import ru.yandex.practicum.devices.message.DeviceRegistrationSuccessMessage;
 import ru.yandex.practicum.devices.model.Device;
 import ru.yandex.practicum.devices.model.DeviceSensor;
 import ru.yandex.practicum.devices.model.DeviceSetting;
@@ -14,8 +15,6 @@ import ru.yandex.practicum.devices.model.DeviceStatus;
 import ru.yandex.practicum.devices.repository.DeviceRepository;
 import ru.yandex.practicum.devices.repository.DeviceSensorRepository;
 import ru.yandex.practicum.devices.repository.DeviceSettingRepository;
-
-import java.util.List;
 
 @Service
 public class KafkaListenerService {
@@ -37,7 +36,8 @@ public class KafkaListenerService {
     }
 
     @KafkaListener(topics = "devices.integration.register.success", groupId = "devices-service")
-    public void handleRegistrationSuccess(DeviceRegistrationSuccessMessage message) {
+    public void handleRegistrationSuccess(String rawMessage) throws JsonProcessingException {
+        DeviceRegistrationSuccessMessage message = objectMapper.readValue(rawMessage, DeviceRegistrationSuccessMessage.class);
         Device device = deviceRepository.findById(message.getDeviceId())
                 .orElseThrow(() -> new DeviceNotFoundException("Device not found: " + message.getDeviceId()));
         device.setStatus(DeviceStatus.REGISTERED);
@@ -59,20 +59,22 @@ public class KafkaListenerService {
             DeviceSensor deviceSensor = new DeviceSensor();
             deviceSensor.setSensorId(sensor.getSensorId());
             deviceSensor.setSensorName(sensor.getSensorName());
+            deviceSensor.setSensorType(sensor.getSensorType());
             deviceSensor.setDeviceId(device.getDeviceId());
             deviceSensorRepository.save(deviceSensor);
         }
     }
 
     @KafkaListener(topics = "devices.integration.register.failed", groupId = "devices-service")
-    public void handleRegistrationFailed(DeviceRegistrationFailedMessage message) {
+    public void handleRegistrationFailed(String rawMessage) throws JsonProcessingException {
+        DeviceRegistrationFailedMessage message = objectMapper.readValue(rawMessage, DeviceRegistrationFailedMessage.class);
         Device device = deviceRepository.findById(message.getDeviceId())
                 .orElseThrow(() -> new DeviceNotFoundException("Device not found: " + message.getDeviceId()));
         device.setStatus(DeviceStatus.REGISTRATION_FAILED);
 
         var details = new Device.StatusErrorDetails(
-                message.errorMessage,
-                message.errorCode
+                message.getErrorMessage(),
+                message.getErrorCode()
         );
 
         try {
@@ -84,33 +86,5 @@ public class KafkaListenerService {
         }
 
         deviceRepository.save(device);
-    }
-
-    @Data
-    public static class DeviceRegistrationSuccessMessage {
-        private String deviceId;
-        private String name;
-        private List<DeviceSetting> settings;
-        private List<DeviceSensor> sensors;
-
-        @Data
-        public static class DeviceSetting {
-            private String settingId;
-            private String settingName;
-            private String settingValue;
-        }
-
-        @Data
-        public static class DeviceSensor {
-            private String sensorId;
-            private String sensorName;
-        }
-    }
-
-    @Data
-    public static class DeviceRegistrationFailedMessage {
-        private String deviceId;
-        private String errorMessage;
-        private int errorCode;
     }
 }

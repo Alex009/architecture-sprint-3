@@ -3,7 +3,6 @@ package ru.yandex.practicum.devices.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "devices")
@@ -11,7 +10,6 @@ import org.hibernate.annotations.ColumnDefault;
 public class Device {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "device_id", nullable = false)
     private String deviceId;
 

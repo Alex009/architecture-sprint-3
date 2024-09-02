@@ -49,13 +49,13 @@ channels:
       message:
         $ref: '#/components/messages/DeviceCommandMessage'
 
-  devices.integration.command.result:
-    description: Канал для получения результатов выполнения команды
+  devices.integration.settings:
+    description: Канал для получения текущих настроек устройства
     publish:
-      operationId: sendCommandResult
+      operationId: sendSettings
       summary: Отправить результат выполнения команды
       message:
-        $ref: '#/components/messages/DeviceCommandResultMessage'
+        $ref: '#/components/messages/DeviceSettingsMessage'
 
 components:
   messages:
@@ -84,19 +84,14 @@ components:
       payload:
         $ref: '#/components/schemas/DeviceCommand'
 
-    DeviceCommandResultMessage:
+    DeviceSettingsMessage:
       contentType: application/json
       payload:
-        $ref: '#/components/schemas/DeviceCommandResult'
+        $ref: '#/components/schemas/DeviceSettings'
 
   schemas:
     DeviceId:
       description: Идентификатор устройства внутри системы
-      type: string
-      format: uuid
-
-    CommandId:
-      description: Уникальный идентификатор команды
       type: string
       format: uuid
 
@@ -214,8 +209,6 @@ components:
       properties:
         deviceId:
           $ref: "#/components/schemas/DeviceId"
-        commandId:
-          $ref: "#/components/schemas/CommandId"
         command:
           type: string
           enum:
@@ -230,24 +223,33 @@ components:
           description: Параметры команды
       required:
         - deviceId
-        - commandId
         - command
 
-    DeviceCommandResult:
+    DeviceSettings:
       type: object
       properties:
         deviceId:
           $ref: "#/components/schemas/DeviceId"
-        commandId:
-          $ref: "#/components/schemas/CommandId"
-        success:
+        turnedOn:
           type: boolean
-          description: Флаг успешности выполнения команды
-        resultData:
-          type: object
-          additionalProperties: true
-          description: Дополнительные данные о результате выполнения команды (например, полученные настройки)
+        settings:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeviceSettingShort'
       required:
         - deviceId
-        - commandId
-        - success
+        - turnedOn
+        - settings
+
+    DeviceSettingShort:
+      type: object
+      properties:
+        settingId:
+          type: string
+          description: Идентификатор настройки устройства
+        settingValue:
+          type: string
+          description: Значение настройки устройства
+      required:
+        - settingId
+        - settingValue
