@@ -10,13 +10,13 @@ services:
           - /homes
         strip_path: false
 
-#  - name: telemetry-service
-#    url: http://telemetry:8080
-#    routes:
-#      - name: telemetry-routes
-#        paths:
-#          - "~/devices/.+/telemetry"
-#        strip_path: false
+  - name: telemetry-service
+    url: http://telemetry:8080
+    routes:
+      - name: telemetry-routes
+        paths:
+          - /telemetry
+        strip_path: true
 
   - name: devices-service
     url: http://devices:8080

@@ -202,7 +202,7 @@ services:
       - "8001:8001"
       - "8002:8002"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/status"]
+      test: ["CMD", "kong-health"]
       interval: 10s
       timeout: 10s
       retries: 5

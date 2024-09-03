@@ -53,6 +53,6 @@ Authorization: Bearer {{jwt_token}}
 Content-Type: application/json
 
 ### read telemetry of device for user-1
-GET http://localhost:8000/devices/{{deviceId}}/telemetry/latest
+GET http://localhost:8000/telemetry/devices/{{deviceId}}/telemetry/latest
 Authorization: Bearer {{jwt_token}}
 Content-Type: application/json
