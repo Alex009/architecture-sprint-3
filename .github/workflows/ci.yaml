@@ -22,7 +22,7 @@ jobs:
 
       - name: Build and start services
         run: docker-compose up -d --build --wait
-        timeout-minutes: 5
+        timeout-minutes: 10
 
       - name: Shut down services
         run: docker-compose down
