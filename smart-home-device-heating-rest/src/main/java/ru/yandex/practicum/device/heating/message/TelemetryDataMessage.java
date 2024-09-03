@@ -11,5 +11,5 @@ public class TelemetryDataMessage {
     private String deviceId;
     private String timestamp;
     private String sensorId;
-    private Object data;
+    private Double value;
 }

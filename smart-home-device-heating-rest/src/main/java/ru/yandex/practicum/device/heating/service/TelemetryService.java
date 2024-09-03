@@ -3,8 +3,8 @@ package ru.yandex.practicum.device.heating.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.device.heating.model.Device;
 import ru.yandex.practicum.device.heating.message.TelemetryDataMessage;
+import ru.yandex.practicum.device.heating.model.Device;
 import ru.yandex.practicum.device.heating.repository.DeviceRepository;
 
 import java.time.LocalDateTime;
@@ -39,9 +39,8 @@ public class TelemetryService {
         }
     }
 
-    private String generateFakeTelemetryData() {
+    private Double generateFakeTelemetryData() {
         // Генерация фейковых данных телеметрии
-        // Например, возвращаем случайное значение температуры
-        return String.valueOf(20 + Math.random() * 10);
+        return 20 + Math.random() * 10;
     }
 }

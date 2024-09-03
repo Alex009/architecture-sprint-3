@@ -29,12 +29,10 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TelemetryData'
+                $ref: '#/components/schemas/TelemetryData'
               examples:
                 telemetryDataExample:
-                  $ref: '#/components/examples/telemetryData'
+                  $ref: '#/components/examples/telemetryItem'
         '401':
           description: Не авторизован.
         '403':
@@ -82,7 +80,7 @@ paths:
                   $ref: '#/components/schemas/TelemetryData'
               examples:
                 telemetryDataExample:
-                  $ref: '#/components/examples/telemetryData'
+                  $ref: '#/components/examples/telemetryArray'
         '401':
           description: Не авторизован.
         '403':
@@ -110,25 +108,27 @@ components:
           type: string
           format: date-time
           description: Время получения данных
-        data:
-          type: object
-          description: Данные телеметрии, зависят от типа датчика
-          additionalProperties: true
+        value:
+          type: number
+          description: Данные телеметрии
       required:
         - sensor_id
         - timestamp
-        - data
+        - value
 
   examples:
-    telemetryData:
+    telemetryItem:
+      summary: Пример данных телеметрии
+      value:
+        sensor_id: "987e6543-e21b-32c4-b765-876543210000"
+        timestamp: "2023-08-28T12:34:56Z"
+        value: 22.5
+    telemetryArray:
       summary: Пример данных телеметрии
       value:
         - sensor_id: "987e6543-e21b-32c4-b765-876543210000"
           timestamp: "2023-08-28T12:34:56Z"
-          data:
-            temperature: 22.5
-            humidity: 45
+          value: 22.5
         - sensor_id: "987e6543-e21b-32c4-b765-876543210001"
           timestamp: "2023-08-28T12:34:56Z"
-          data:
-            pressure: 1013
+          value: 1013

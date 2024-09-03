@@ -1,0 +1,12 @@
+### health
+GET http://localhost:8083/actuator/health
+
+### get latest telemetry
+GET http://localhost:8083/devices/da3f0e50-84f1-428c-b2f2-64dfdf5d9aa3/telemetry/latest
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3MjUyMDU2NTksImV4cCI6MTc1Njc0MTY1OSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoidXNlci0xIn0.KSz5Y27TIApz3Og6J_xc0NposG-NjUsQlehNuJxlmRE
+Content-Type: application/json
+
+### get telemetry
+GET http://localhost:8083/devices/da3f0e50-84f1-428c-b2f2-64dfdf5d9aa3/telemetry?startDate=2024-09-03T00:00:00Z&endDate=2024-09-20T00:00:00Z
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3MjUyMDU2NTksImV4cCI6MTc1Njc0MTY1OSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoidXNlci0xIn0.KSz5Y27TIApz3Og6J_xc0NposG-NjUsQlehNuJxlmRE
+Content-Type: application/json
