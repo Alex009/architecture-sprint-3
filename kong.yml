@@ -1,0 +1,42 @@
+_format_version: "2.1"
+_transform: true
+
+services:
+  - name: homes-service
+    url: http://homes:8080
+    routes:
+      - name: homes-route
+        paths:
+          - /homes
+        strip_path: false
+
+  - name: telemetry-service
+    url: http://telemetry:8080
+    routes:
+      - name: telemetry-routes
+        paths:
+          - /telemetry
+        strip_path: true
+
+  - name: devices-service
+    url: http://devices:8080
+    routes:
+      - name: devices-route
+        paths:
+          - /devices
+        strip_path: false
+
+plugins:
+  - name: jwt
+    config:
+      claims_to_verify:
+        - exp
+
+consumers:
+  - username: demo-issuer
+
+jwt_secrets:
+  - consumer: demo-issuer
+    key: Online JWT Builder
+    algorithm: HS256
+    secret: 1be58f3f3a4c8277dd28898f7eb2f9a66f20fcdc74d79a42a8d2314c39745931b4c5a8be869085285111ce64e02a20ec534394eb9033fb5e85f400a3ba1fe3dd057644708559a835a97de35078a9b741abb4c4cb89447c481a82794d1b364c374145f7fdc79cba2e03617e2b70be743f9d9f5390aab7dd8ed3eeaf4d075ff19c

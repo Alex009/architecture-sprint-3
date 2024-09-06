@@ -1,0 +1,53 @@
+@startuml
+autonumber
+
+participant DeviceService as DS
+participant Kafka as K
+participant IntegrationService as IS
+participant IntegrationRedis as IR
+participant Device as D
+
+par регистрация
+    loop
+    DS --> K: /devices/integration/register/start \n RegisterDevice(deviceId, deviceType, metadata)
+    K --> IS: Обработка запроса на регистрацию
+    IS --> D: Подключение к устройству\nполучение стартовых данных
+    alt подключение успешно
+        D --> IS: Данные устройства (имя, настройки, сенсоры)
+        IS --> IR: Сохранить данные устройства\n(deviceId, данные)
+        IS --> K: /devices/integration/register/success \n Успешная регистрация (deviceId, данные)
+    else ошибка подключения
+        IS --> K: /devices/integration/register/failed \n Ошибка регистрации (deviceId, ошибка)
+    end
+        K --> DS: Уведомление о результате регистрации по deviceId
+    end
+
+else обновление данных
+
+    loop
+    IS --> IR: Получить данные устройств для опроса
+    IR --> IS: Устройства и deviceId
+    IS --> D: Получение данных с датчика
+    D --> IS: Данные с датчика
+    IS --> K: /devices/integration/telemetry \n Телеметрия (deviceId, sensorId, данные)
+    end
+
+else передача команд
+    loop
+    DS --> K: /devices/integration/command/run \n Команда (deviceId, commandId, command, параметры)
+    K --> IS: Получение команды
+    IS --> IR: Поиск устройства по deviceId
+    IR --> IS: Данные устройства
+    alt данные найдены - устройство нужного типа
+        IS --> D: Передача команды устройству
+        D --> IS: Результат выполнения команды
+        IS --> K: /devices/integration/command/result \n Результат команды (deviceId, commandId, success, resultData)
+    else данных нет
+        note right of IS: Это устройство не нашего типа, обработает другой сервис
+    end
+    K --> DS: Уведомление о результате выполнения команды по commandId
+    end
+
+end
+
+@enduml

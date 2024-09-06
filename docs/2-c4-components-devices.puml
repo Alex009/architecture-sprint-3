@@ -1,0 +1,39 @@
+@startuml
+!define RELATIVE_INCLUDE true
+
+!include C4/C4_Component.puml
+
+Container_Boundary(c1, "Device Management Service") {
+
+    ' Компоненты
+    Component(device_user_api, "Device User API", "Spring REST Controller", "Обработка внешних запросов")
+    Component(device_service_api, "Device Service API", "Spring REST Controller", "Обработка запросов от сервисов")
+    Component(device_service, "Device Service", "Spring Service", "Логика управления устройствами")
+    Component(device_repository, "Device Repository", "Spring Data JPA", "Доступ к данным устройств в базе данных")
+    Component(device_db, "Device Database", "PostgreSQL", "Хранение данных об устройствах")
+    Component(kafka_listener, "Kafka Listener", "Spring Kafka Listener", "Чтение данных от устройств через Kafka")
+    Component(kafka_producer, "Kafka Producer", "Spring Kafka Producer", "Отправка команд устройствам через Kafka")
+
+    ' Взаимодействие между компонентами
+    Rel(device_user_api, device_service, "Вызовы бизнес-логики")
+    Rel(device_service_api, device_service, "Вызовы бизнес-логики")
+    Rel(device_service, device_repository, "Запросы к данным устройств", "JPA")
+    Rel(device_repository, device_db, "Чтение и запись данных", "SQL")
+    Rel(kafka_listener, device_service, "Передача данных от устройств в бизнес-логику", "Event-driven")
+    Rel(device_service, kafka_producer, "Отправка команд устройствам через Kafka", "Event-driven")
+}
+
+' Внешние взаимодействия
+Component_Ext(api_gateway, "API Gateway", "Маршрутизация запросов, JWT проверка")
+Component_Ext(home_service, "Home Management Service", "Проверка доступа к дому")
+Component_Ext(telemetry_service, "Telemetry Service", "Проверка доступа к устройствам, получение данных от устройств")
+Component_Ext(kafka, "Data Bus (Kafka)", "Асинхронное взаимодействие с устройствами")
+
+' Взаимодействие с внешними системами
+Rel(api_gateway, device_user_api, "Направление запросов на управление устройствами", "REST API")
+Rel(device_service, home_service, "Запросы данных домов для проверки доступа", "REST API")
+Rel(telemetry_service, device_service_api, "Проверка доступа к устройствам", "REST API")
+Rel(kafka_producer, kafka, "Отправка команд устройствам", "Kafka")
+Rel(kafka, kafka_listener, "Чтение данных от устройств", "Kafka")
+
+@enduml

@@ -1,0 +1,58 @@
+### health
+GET http://localhost:8081/actuator/health
+
+### read devices list for user-1
+GET http://localhost:8081/devices
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3MjUyMDU2NTksImV4cCI6MTc1Njc0MTY1OSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoidXNlci0xIn0.KSz5Y27TIApz3Og6J_xc0NposG-NjUsQlehNuJxlmRE
+Content-Type: application/json
+
+### read device for user-1
+GET http://localhost:8081/devices/da3f0e50-84f1-428c-b2f2-64dfdf5d9aa3
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3MjUyMDU2NTksImV4cCI6MTc1Njc0MTY1OSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoidXNlci0xIn0.KSz5Y27TIApz3Og6J_xc0NposG-NjUsQlehNuJxlmRE
+Content-Type: application/json
+
+### read settings of device for user-1
+GET http://localhost:8081/devices/da3f0e50-84f1-428c-b2f2-64dfdf5d9aa3/settings
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3MjUyMDU2NTksImV4cCI6MTc1Njc0MTY1OSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoidXNlci0xIn0.KSz5Y27TIApz3Og6J_xc0NposG-NjUsQlehNuJxlmRE
+Content-Type: application/json
+
+### create new device for user-1
+POST http://localhost:8081/devices
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3MjUyMDU2NTksImV4cCI6MTc1Njc0MTY1OSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoidXNlci0xIn0.KSz5Y27TIApz3Og6J_xc0NposG-NjUsQlehNuJxlmRE
+Content-Type: application/json
+
+{
+  "deviceName": "heating test device for user-1",
+  "deviceType": "heating-rest",
+  "homeId": "4173497a-307b-43b1-954c-c51258c75f54",
+  "metadata": {
+    "access-url": "http://something"
+  }
+}
+
+### check access to device
+POST http://localhost:8081/service/validate-access
+Content-Type: application/json
+
+{
+  "userId": "user-1",
+  "deviceId": "device-01"
+}
+
+### check access to not exist device
+POST http://localhost:8081/service/validate-access
+Content-Type: application/json
+
+{
+  "userId": "user-1",
+  "deviceId": "device-200"
+}
+
+### check not exist user access to device
+POST http://localhost:8081/service/validate-access
+Content-Type: application/json
+
+{
+  "userId": "user-22",
+  "deviceId": "device-01"
+}

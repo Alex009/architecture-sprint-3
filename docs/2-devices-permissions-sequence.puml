@@ -1,0 +1,16 @@
+@startuml
+autonumber
+
+participant DeviceService as DS
+participant DeviceDataBase as DDB
+participant HomeService as HS
+participant HomeDataBase as HDB
+
+DS --> DDB: получить данные по устройству\ninternal_device_id
+DDB --> DS: данные, включая и home_id
+DS --> HS: есть ли у user_id доступ к home_id
+HS --> HDB: найти разрешение user_id + home_id
+HDB --> HS: результат поиска
+HS --> DS: данные по уровню доступа\n(true если разрешение найдено)
+
+@enduml

@@ -1,0 +1,83 @@
+@startuml
+
+entity "User" as user {
+  * user_id: UUID
+  --
+  password_hash: String
+  email: String
+}
+
+entity "Home" as home {
+  * home_id: UUID
+  --
+  home_name: String
+}
+
+user "1" -- "0..*" home : "владеет"
+user "0..*" -- "0..*" home : "получает доступ"
+
+entity "Device" as device {
+  * device_id: UUID
+  --
+  device_name: String
+}
+
+home "1" -- "0..*" device : "содержит"
+
+entity "DeviceIntegration" as device_integration {
+  * device_id: UUID
+  --
+  some_device_type_specific_data
+}
+
+device "1" -- "1" device_integration : "имеет интеграционные данные"
+
+entity "DeviceSetting" as device_setting {
+  * setting_id: UUID
+  --
+  setting_name: String
+  setting_value: String
+}
+
+device "1" -- "0..*" device_setting : "имеет"
+
+entity "DeviceSensor" as device_sensor {
+  * sensor_id: UUID
+  --
+  sensor_name: String
+  sensor_type: String
+}
+
+device "1" -- "0..*" device_sensor : "имеет"
+
+entity "Telemetry" as telemetry {
+  * timestamp: DateTime
+  --
+  data: JSON
+}
+
+device_sensor "1" -- "0..*" telemetry : "связан"
+
+entity "AutomationScenario" as automation_scenario {
+  * scenario_id: UUID
+  --
+  scenario_name: String
+  trigger_type: String
+  trigger_parameters: JSON
+  action_id: UUID
+}
+
+entity "AutomationAction" as automation_action {
+  * action_id: UUID
+  --
+  action_type: String
+  action_parameters: JSON
+  next_action_id: UUID?
+}
+
+user "1" -- "0..*" automation_scenario : "создает"
+
+automation_scenario "1" -- "1" automation_action : "выполняет"
+automation_action "1" -- "0..1" automation_action : "выполняет следующее"
+
+@enduml

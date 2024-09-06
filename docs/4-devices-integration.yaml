@@ -1,0 +1,254 @@
+asyncapi: '2.0.0'
+info:
+  title: Device Integration Service
+  version: '1.0.0'
+
+servers:
+  local:
+    url: kafka.smart-home.local
+    protocol: kafka
+
+channels:
+  devices.integration.register.start:
+    description: Канал для регистрации устройства
+    subscribe:
+      operationId: onDeviceRegistrationRequested
+      summary: Зарегистрировать новое устройство
+      message:
+        $ref: '#/components/messages/DeviceRegistrationMessage'
+
+  devices.integration.register.success:
+    description: Канал для подтверждения успешной регистрации устройства
+    publish:
+      operationId: registerSuccess
+      summary: Подтверждение успешной регистрации устройства
+      message:
+        $ref: '#/components/messages/DeviceRegistrationSuccessMessage'
+
+  devices.integration.register.failed:
+    description: Канал для уведомления о неудачной регистрации устройства
+    publish:
+      operationId: registerFailed
+      summary: Уведомление о неудачной регистрации устройства
+      message:
+        $ref: '#/components/messages/DeviceRegistrationFailedMessage'
+
+  devices.integration.telemetry:
+    description: Канал для передачи данных телеметрии от устройств
+    publish:
+      operationId: sendTelemetry
+      summary: Отправить данные телеметрии
+      message:
+        $ref: '#/components/messages/TelemetryDataMessage'
+
+  devices.integration.command.run:
+    description: Канал для отправки команд устройству
+    subscribe:
+      operationId: onCommandReceived
+      summary: Получить команду для устройства
+      message:
+        $ref: '#/components/messages/DeviceCommandMessage'
+
+  devices.integration.settings:
+    description: Канал для получения текущих настроек устройства
+    publish:
+      operationId: sendSettings
+      summary: Отправить результат выполнения команды
+      message:
+        $ref: '#/components/messages/DeviceSettingsMessage'
+
+components:
+  messages:
+    DeviceRegistrationMessage:
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/DeviceRegistration'
+
+    DeviceRegistrationSuccessMessage:
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/DeviceRegistrationSuccess'
+
+    DeviceRegistrationFailedMessage:
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/DeviceRegistrationFailed'
+
+    TelemetryDataMessage:
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/TelemetryData'
+
+    DeviceCommandMessage:
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/DeviceCommand'
+
+    DeviceSettingsMessage:
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/DeviceSettings'
+
+  schemas:
+    DeviceId:
+      description: Идентификатор устройства внутри системы
+      type: string
+      format: uuid
+
+    DeviceRegistration:
+      type: object
+      properties:
+        deviceId:
+          $ref: "#/components/schemas/DeviceId"
+        deviceType:
+          type: string
+          enum:
+            - rest
+            - mqtt
+          description: Тип устройства
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Дополнительные данные для регистрации устройства
+      required:
+        - deviceId
+        - deviceType
+
+    DeviceRegistrationSuccess:
+      type: object
+      properties:
+        deviceId:
+          $ref: "#/components/schemas/DeviceId"
+        name:
+          type: string
+          description: Полученное от устройства имя
+        settings:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeviceSetting'
+        sensors:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeviceSensor'
+      required:
+        - deviceId
+        - name
+        - settings
+        - sensors
+
+    DeviceRegistrationFailed:
+      type: object
+      properties:
+        deviceId:
+          $ref: "#/components/schemas/DeviceId"
+        errorMessage:
+          type: string
+          description: Сообщение об ошибке регистрации
+        errorCode:
+          type: integer
+          description: Код ошибки при регистрации
+      required:
+        - deviceId
+        - errorMessage
+        - errorCode
+
+    DeviceSetting:
+      type: object
+      properties:
+        settingId:
+          type: string
+          description: Идентификатор настройки устройства
+        settingName:
+          type: string
+          description: Человеко-читаемое имя настройки устройства
+        settingValue:
+          type: string
+          description: Значение настройки устройства
+      required:
+        - settingId
+        - settingName
+        - settingValue
+
+    DeviceSensor:
+      type: object
+      properties:
+        sensorId:
+          type: string
+          description: Идентификатор датчика устройства
+        sensorName:
+          type: string
+          description: Человеко-читаемое имя датчика устройства
+      required:
+        - sensorId
+        - sensorName
+
+    TelemetryData:
+      type: object
+      properties:
+        deviceId:
+          $ref: "#/components/schemas/DeviceId"
+        timestamp:
+          type: string
+          format: date-time
+          description: Время получения данных
+        sensorId:
+          type: string
+          description: Идентификатор датчика устройства
+        value:
+          type: number
+          description: Данные телеметрии
+      required:
+        - deviceId
+        - timestamp
+        - sensorId
+        - value
+
+    DeviceCommand:
+      type: object
+      properties:
+        deviceId:
+          $ref: "#/components/schemas/DeviceId"
+        command:
+          type: string
+          enum:
+            - turn-on
+            - turn-off
+            - change-setting
+            - read-settings
+          description: Тип команды
+        parameters:
+          type: object
+          additionalProperties: true
+          description: Параметры команды
+      required:
+        - deviceId
+        - command
+
+    DeviceSettings:
+      type: object
+      properties:
+        deviceId:
+          $ref: "#/components/schemas/DeviceId"
+        turnedOn:
+          type: boolean
+        settings:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeviceSettingShort'
+      required:
+        - deviceId
+        - turnedOn
+        - settings
+
+    DeviceSettingShort:
+      type: object
+      properties:
+        settingId:
+          type: string
+          description: Идентификатор настройки устройства
+        settingValue:
+          type: string
+          description: Значение настройки устройства
+      required:
+        - settingId
+        - settingValue

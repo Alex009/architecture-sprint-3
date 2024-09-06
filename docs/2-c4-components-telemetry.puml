@@ -1,0 +1,32 @@
+@startuml
+!define RELATIVE_INCLUDE true
+
+!include C4/C4_Component.puml
+
+Container_Boundary(c1, "Telemetry Service") {
+
+    ' Компоненты
+    Component(telemetry_api, "Telemetry API", "Spring REST Controller", "Обработка запросов на получение данных телеметрии")
+    Component(telemetry_service, "Telemetry Service", "Spring Service", "Логика обработки данных телеметрии")
+    Component(telemetry_repository, "Telemetry Repository", "Spring Data JPA", "Доступ к данным телеметрии в базе данных")
+    Component(telemetry_db, "Telemetry Database", "InfluxDB", "Хранение данных телеметрии")
+    Component(kafka_listener, "Kafka Listener", "Spring Kafka Listener", "Чтение данных от устройств через Kafka")
+
+    ' Взаимодействие между компонентами
+    Rel(telemetry_api, telemetry_service, "Вызовы бизнес-логики", "REST API")
+    Rel(telemetry_service, telemetry_repository, "Запросы к данным телеметрии", "InfluxQL")
+    Rel(telemetry_repository, telemetry_db, "Чтение и запись данных", "Influx Query")
+    Rel(kafka_listener, telemetry_service, "Передача данных от устройств в бизнес-логику", "Event-driven")
+}
+
+' Внешние взаимодействия
+Component_Ext(api_gateway, "API Gateway", "Маршрутизация запросов, JWT проверка")
+Component_Ext(device_management, "Device Management Service", "Проверка доступа к устройствам")
+Component_Ext(kafka, "Data Bus (Kafka)", "Получение данных от устройств через Kafka")
+
+' Взаимодействие с внешними системами
+Rel(api_gateway, telemetry_api, "Запросы на получение данных телеметрии", "REST API")
+Rel(telemetry_service, device_management, "Проверка доступа к устройствам", "REST API")
+Rel(kafka, kafka_listener, "Чтение данных от устройств", "Kafka")
+
+@enduml

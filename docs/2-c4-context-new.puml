@@ -1,0 +1,34 @@
+@startuml
+!define RELATIVE_INCLUDE true
+
+!include C4/C4_Context.puml
+
+' Основная система
+System(c1, "SAAS система")
+
+' Внешние системы
+System_Ext(sms_gateway, "SMS Gateway", "Отправка SMS")
+System_Ext(email_gateway, "Email Gateway", "Отправка email")
+System_Ext(web_app, "Web Application", "Веб-приложение для пользователей")
+
+Boundary(b1, "Внешние устройства пользователей") {
+    System_Ext(external_device_mqtt, "MQTT Devices")
+    System_Ext(external_device_rest, "REST Devices")
+    System_Ext(external_device_other, "Other Devices")
+}
+
+' Пользователь системы
+Person(user, "User", "Пользователь системы")
+
+' Взаимодействие между контейнерами
+Rel(user, web_app, "Использует")
+Rel(web_app, c1, "HTTP Requests")
+
+Rel(c1, sms_gateway, "Отправка SMS", "REST API")
+Rel(c1, email_gateway, "Отправка email", "SMTP")
+
+Rel(c1, external_device_mqtt, "Читает данные и дает команды", "MQTT")
+Rel(c1, external_device_rest, "Читает данные и дает команды","REST API")
+Rel(c1, external_device_other, "Читает данные и дает команды","Other Protocol")
+
+@enduml
